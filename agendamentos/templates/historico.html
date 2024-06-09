@@ -1,0 +1,121 @@
+{% extends 'base_pages.html' %}
+{% load static %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <title>Cadastrar Equipamentos - SYLENDAR</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+
+  <!-- Additional CSS Files -->
+  <link rel="stylesheet" href="{% static 'assets/css/fontawesome.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/css/templatemo-seo-dream.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/css/animated.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/css/owl.css' %}">
+ 
+</head>
+
+<body>
+<!-- ***** Preloader End ***** -->
+
+<!-- ***** Header Area Start ***** -->
+<header class="header-area header-sticky wow slideInDown" data-wow-duration="0.75s" data-wow-delay="0s" style="position: absolute; top: 0; width: 100%;">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <nav class="main-nav">
+            <!-- ***** Logo Start ***** -->
+            <a href="{% url 'home' %}" class="logo">
+              <h4>Sylendar <img src="{% static 'assets/images/logo-iconn.png' %}" alt=""></h4>
+            </a>
+            <!-- ***** Logo End ***** -->
+            <!-- ***** Menu Start ***** -->
+  
+            <a class='menu-trigger'>
+              <span>Menu</span>
+            </a>
+            <!-- ***** Menu End ***** -->
+          </nav>
+        </div>
+      </div>
+    </div>
+  </header>
+
+<body>
+    <div class="container_home">
+        <div class="home-form">
+            <h1>Histórico de Agendamentos</h1>
+            
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID do Agendamento</th>
+                        <th>Equipamento</th>
+                        <th>Data</th>
+                        <th>Hora</th>
+                        <th>Status do Agendamento</th> <!-- Novo campo para o status do agendamento -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for agendamento in agendamentos %}
+                    <tr>
+                        <td>{{ agendamento.id }}</td>
+                        <td>{{ agendamento.equipamento }}</td>
+                        <td>{{ agendamento.data }}</td>
+                        <td>{{ agendamento.hora }}</td>
+                        <td>
+                            {% if agendamento.cancelado %}
+                                Cancelado
+                            {% elif agendamento.devolvido %}
+                                Devolvido
+                            {% elif agendamento.emprestado %}
+                                Emprestado
+                            {% elif agendamento.data < timezone.now %}
+                                Passado
+                            {% elif agendamento.data == timezone.now %}
+                                Agendado para agora
+                            {% else %}
+                                Agendamento futuro
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <a class="btn btn-primary" href="{% url 'cliente' %}">Voltar</a>
+            <footer>
+                <p>&copy; 2024 Sistema de Agendamentos</p>
+            </footer>
+            {% if error_message %}
+            <p>{{ error_message }}</p>
+            {% endif %}
+        </div>
+    </div>
+      <!-- Scripts -->
+<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'assets/js/owl-carousel.js' %}"></script>
+<script src="{% static 'assets/js/animation.js' %}"></script>
+<script src="{% static 'assets/js/imagesloaded.js' %}"></script>
+<script src="{% static 'assets/js/custom.js' %}"></script>
+</body>
+
+
+</html>
+{% endblock %}

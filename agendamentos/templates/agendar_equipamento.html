@@ -1,0 +1,184 @@
+{% extends 'base_pages.html' %}
+{% load static %}
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Agendar Equipamento</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Adicione o link para o CSS do SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa; /* Cor de fundo clara */
+        }
+        .container_home {
+            margin-top: 50px;
+            background: #ffffff; /* Fundo branco para o contêiner */
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+        }
+        .form-control {
+            margin-bottom: 15px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="container_home">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <h2 class="mb-4 text-center">Agendar Equipamento</h2>
+                    <form id="agendarForm" method="post" action="{% url 'agendar_equipamento' %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="equipamento">Selecione o Equipamento:</label>
+                            <select id="equipamento" name="equipamento" class="form-control">
+                                {% for equipamento in equipamentos %}
+                                <option value="{{ equipamento.id }}">{{ equipamento.nome }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="data">Data:</label>
+                            <input type="date" id="data" name="data" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="hora">Hora:</label>
+                            <input type="time" id="hora" name="hora" class="form-control" required {% if not data_atual == data %}min="00:00" max="23:59"{% endif %}>
+                        </div>
+                        <div class="form-group">
+                            <label for="quantidade_dias">Quantidade de Dias:</label>
+                            <select id="quantidade_dias" name="quantidade_dias" class="form-control">
+                                <option value="1">1 dia</option>
+                                <option value="2">2 dias</option>
+                                <option value="3" selected>3 dias</option>
+                            </select>
+                        </div>
+                        <div class="text-center">
+                            <input type="submit" id="submitBtn" value="Agendar" class="btn btn-primary btn-md">
+                        </div>
+                    </form>
+                    <div id="errorDiv"></div> <!-- Div para exibir mensagens de erro -->
+                    <br>
+                    <a href="{% url 'cliente' %}" class="btn btn-secondary btn-md">Voltar</a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Adicione o script do SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('agendarForm').addEventListener('submit', function(e) {
+                e.preventDefault(); // Impede o envio padrão do formulário
+                
+                // Desabilita o botão de envio e exibe "Aguarde..."
+                document.getElementById('submitBtn').setAttribute('disabled', 'disabled');
+                document.getElementById('submitBtn').value = 'Aguarde...';
+    
+                // Envia uma solicitação POST para agendar_equipamento
+                fetch('{% url 'agendar_equipamento' %}', {
+                    method: 'POST',
+                    body: new FormData(this),
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Exibe uma caixa de diálogo com base na resposta JSON
+                    if (data.success) {
+                        // Exibir mensagem de sucesso com o SweetAlert2
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Sucesso!',
+                            text: data.message,
+                            showConfirmButton: false,
+                            timer: 5000 // Fecha automaticamente após 5 segundos
+                        }).then((result) => {
+                            // Após a mensagem de sucesso, perguntar ao cliente se deseja fazer outro agendamento
+                            Swal.fire({
+                                title: 'Deseja fazer outro agendamento?',
+                                showDenyButton: true,
+                                showCancelButton: true,
+                                confirmButtonText: `Sim`,
+                                denyButtonText: `Não`,
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // Se o cliente clicar em "Sim", recarregar a página para fazer outro agendamento
+                                    window.location.reload();
+                                } else if (result.isDenied) {
+                                    // Se o cliente clicar em "Não", redirecionar para a página de seus agendamentos
+                                    window.location.href = "{% url 'cliente' %}";
+                                }
+                            })
+                        });
+                    } else {
+                        // Habilita o botão de envio e restaura o texto
+                        document.getElementById('submitBtn').removeAttribute('disabled');
+                        document.getElementById('submitBtn').value = 'Agendar';
+                        
+                        // Verifica os casos de erro e exibe alertas apropriados
+                        if (data.message.includes("hora de antecedência")) {
+                            // Exibe alerta para agendamento com menos de 1 hora de antecedência
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Erro!',
+                                text: 'É necessário agendar com pelo menos 1 hora de antecedência.',
+                            });
+                        } else if (data.message.includes("equipamento não está disponível")) {
+                            // Exibe alerta para equipamento não disponível no estoque
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Erro!',
+                                text: 'Não há equipamentos disponíveis no estoque para este agendamento.',
+                            });
+                        } else if (data.message.includes("equipamento não está disponível para o horário solicitado")) {
+                            // Exibe alerta para equipamento não disponível para o horário solicitado
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Erro!',
+                                text: 'Este equipamento não está disponível para o horário solicitado.',
+                            });
+                        } else {
+                            // Exibe a mensagem de erro na div errorDiv
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Erro!',
+                                text: data.message,
+                            });
+                        }
+                    }
+                })
+                .catch(error => {
+                    // Habilita o botão de envio e restaura o texto
+                    document.getElementById('submitBtn').removeAttribute('disabled');
+                    document.getElementById('submitBtn').value = 'Agendar';
+                    
+                    console.error('Erro:', error);
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
+{% endblock %}

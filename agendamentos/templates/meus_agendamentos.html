@@ -1,0 +1,212 @@
+{% extends 'base_pages.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Sistema de Agendamentos - Meus Agendamentos</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Adicione o link para o CSS do SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+
+<body>
+    <div class="container_home">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">Meus Agendamentos</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID do Agendamento</th>
+                                <th>Equipamento</th>
+                                <th>Data</th>
+                                <th>Hora</th>
+                                <th>Situação</th>
+                                <th>Prazo Restante</th>
+                                <th>Data Prevista</th>
+                                <th>Devolvido</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for agendamento in agendamentos %}
+                                <tr>
+                                    <td>{{ agendamento.id }}</td>
+                                    <td>{{ agendamento.equipamento }}</td>
+                                    <td>{{ agendamento.data|date:"d/m/Y" }}</td>
+                                    <td>{{ agendamento.hora|time:"H:i" }}</td>
+                                    <td>
+                                        {% if agendamento.data_emprestimo %}
+                                            Emprestado
+                                        {% else %}
+                                            Agendado
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if agendamento.prazo_restante %}
+                                            {% if agendamento.prazo_restante.days > 0 %}
+                                                {{ agendamento.prazo_restante.days }} dias
+                                            {% else %}
+                                                {% if not agendamento.devolvido %}
+                                                    {{ agendamento.prazo_restante|timesince }} restante
+                                                {% else %}
+                                                    N/A
+                                                {% endif %}
+                                            {% endif %}
+                                        {% else %}
+                                            N/A
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if agendamento.data_entrega_prevista %}
+                                            {{ agendamento.data_entrega_prevista|date:"d/m/Y" }}
+                                        {% else %}
+                                            N/A
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if agendamento.devolvido %}
+                                            Sim
+                                        {% else %}
+                                            Não
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if agendamento.situacao == "Agendado" %}
+                                            <button onclick="mostrarCamposReagendamento({{ agendamento.id }})" class="btn btn-primary" {% if not agendamento.pode_reagendar %}disabled{% endif %}>Reagendar</button>
+                                            {% if agendamento.pode_cancelar %}
+                                                <button onclick="confirmarCancelamento('{% url 'cancelar_agendamento' agendamento.id %}')" class="btn btn-danger">Cancelar</button>
+                                            {% else %}
+                                                <button class="btn btn-danger" disabled>Cancelar</button>
+                                            {% endif %}
+                                            <div id="campos_reagendamento_{{ agendamento.id }}" style="display: none;">
+                                                <input type="date" id="nova_data_{{ agendamento.id }}" name="nova_data_{{ agendamento.id }}">
+                                                <input type="time" id="nova_hora_{{ agendamento.id }}" name="nova_hora_{{ agendamento.id }}">
+                                                <button onclick="enviarReagendamento({{ agendamento.id }})" class="btn btn-primary">Enviar</button>
+                                                <button onclick="cancelarReagendamento({{ agendamento.id }})" class="btn btn-secondary">Cancelar</button>
+                                            </div>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <a href="{% url 'cliente' %}" class="btn btn-primary">Voltar</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Adicione o script do SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+        function confirmarCancelamento(url) {
+            Swal.fire({
+                title: 'Tem certeza?',
+                text: 'Deseja realmente cancelar este agendamento?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sim, cancelar!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        }
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            // Se o cancelamento for bem-sucedido, exibe uma mensagem de sucesso
+                            Swal.fire(
+                                'Cancelado!',
+                                'O agendamento foi cancelado com sucesso.',
+                                'success'
+                            ).then(() => {
+                                // Recarrega a página após a confirmação do usuário
+                                window.location.reload();
+                            });
+                        } else {
+                            console.error('Erro ao cancelar agendamento:', response.statusText);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro ao cancelar agendamento:', error);
+                    });
+                }
+            });
+        }
+        
+        function mostrarCamposReagendamento(agendamentoId) {
+            // Obtém a div dos campos de reagendamento
+            const divCamposReagendamento = document.getElementById(`campos_reagendamento_${agendamentoId}`);
+            // Mostra os campos
+            divCamposReagendamento.style.display = 'block';
+        }
+        
+        function enviarReagendamento(agendamentoId) {
+            Swal.fire({
+                title: 'Tem certeza?',
+                text: 'Deseja realmente reagendar este agendamento?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sim, reagendar!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const novaData = document.getElementById(`nova_data_${agendamentoId}`).value;
+                    const novaHora = document.getElementById(`nova_hora_${agendamentoId
+}`).value;
+                    fetch(`/reagendar/${agendamentoId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify({ nova_data: novaData, nova_hora: novaHora })
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            // Se o reagendamento for bem-sucedido, exibe uma mensagem de sucesso
+                            Swal.fire(
+                                'Reagendado!',
+                                'O agendamento foi reagendado com sucesso.',
+                                'success'
+                            ).then(() => {
+                                // Recarrega a página após a confirmação do usuário
+                                window.location.reload();
+                            });
+                        } else {
+                            console.error('Erro ao reagendar agendamento:', response.statusText);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro ao reagendar agendamento:', error);
+                    });
+                }
+            });
+        }
+        
+        function cancelarReagendamento(agendamentoId) {
+            // Oculta os campos de reagendamento
+            const divCamposReagendamento = document.getElementById(`campos_reagendamento_${agendamentoId}`);
+            divCamposReagendamento.style.display = 'none';
+        }
+        
+    </script>
+</body>
+
+</html>
+{% endblock %}

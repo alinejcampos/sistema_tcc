@@ -1,0 +1,318 @@
+
+{% extends 'base_pages.html' %}
+{% load static %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
+    <title>Cadastre-se</title>
+    
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Additional CSS Files -->
+    <link rel="stylesheet" href="{% static 'assets/css/fontawesome.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/templatemo-seo-dream.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/animated.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/owl.css' %}">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+<body>
+
+    <!-- ***** Preloader Start ***** -->
+    <div id="js-preloader" class="js-preloader">
+      <div class="preloader-inner">
+        <span class="dot"></span>
+        <div class="dots">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
+    <!-- ***** Preloader End ***** -->
+  
+    <!-- ***** Header Area Start ***** -->
+    <header class="header-area header-sticky wow slideInDown" data-wow-duration="0.75s" data-wow-delay="0s">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <nav class="main-nav">
+              <!-- ***** Logo Start ***** -->
+              <a href="{% url 'index' %}" class="logo">
+  
+                <h4>Sylendar <img src="{% static 'assets/images/logo-iconn.png' %}" alt=""></h4>
+              </a>
+              <!-- ***** Logo End ***** -->
+              <!-- ***** Menu Start ***** -->
+  
+              <a class='menu-trigger'>
+                <span>Menu</span>
+              </a>
+              <!-- ***** Menu End ***** -->
+            </nav>
+          </div>
+        </div>
+      </div>
+    </header>
+    <!-- ***** Header Area End ***** -->
+    <div id="contact" class="contact-us section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 wow fadeInUp" data-wow-duration="0.5s" data-wow-delay="0.25s">
+                    <form id="contact-form" action="" method="post">
+                        <div class="row">
+                            <div class="col-lg-6 offset-lg-3">
+                                <div class="section-heading">
+                                    <h2 style="text-transform: capitalize;">Cadastre-se no Sylendar<span></span></h2>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Adicione o bloco de mensagens aqui -->
+                        {% if messages %}
+                        <div class="messages">
+                            {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}" role="alert">
+                                {{ message }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <!-- Fim do bloco de mensagens -->
+                        
+                        <div class="col-lg-9 offset-lg-3">
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <fieldset>
+                                        <div class="form-group row">
+                                            <label for="id_first_name" class="col-sm-2 col-form-label text-right">Nome:</label>
+                                            <div class="col-lg-8">
+                                                <input type="text" class="form-control" id="id_first_name" name="first_name" placeholder="Nome" autocomplete="on" required>
+                                            </div>
+                                        </div>
+                        
+                                        <div class="form-group row">
+                                            <label for="id_last_name" class="col-sm-2 col-form-label text-right">Sobrenome:</label>
+                                            <div class="col-lg-8">
+                                                <input type="text" class="form-control" id="id_last_name" name="last_name" placeholder="Sobrenome" autocomplete="on" required>
+                                            </div>
+                                        </div>
+                        
+                                        <div class="form-group row">
+                                            <label for="id_username" class="col-sm-2 col-form-label text-right">Nome de Usuário:</label>
+                                            <div class="col-lg-8">
+                                                <input type="text" class="form-control" id="id_username" name="username" placeholder="Nome de Usuário" pattern="[\w]+" required>
+                                                <small class="form-text text-muted">Pelo menos 5 caracteres. Não use caracteres especiais.</small>
+                                                <div id="username-exists-message" style="color: red; font-size: 0.8em; display: none;">Este nome de usuário já está em uso.</div>
+                                            </div>
+                                        </div>
+                        
+                                        <div class="form-group row">
+                                            <label for="id_email" class="col-sm-2 col-form-label text-right">E-mail:</label>
+                                            <div class="col-lg-8">
+                                                <input type="email" class="form-control" id="id_email" name="email" placeholder="E-mail" required>
+                                                <small class="form-text text-muted">Ex: exemplo@dominio.com</small>
+                                            </div>
+                                        </div>
+                        
+                                        <div class="form-group row">
+                                            <label for="id_telefone" class="col-sm-2 col-form-label text-right">Telefone:</label>
+                                            <div class="col-lg-8">
+                                                <input type="tel" class="form-control" id="id_telefone" name="telefone" placeholder="(99) 99999-9999" required>
+                                                <small class="form-text text-muted"> </small>
+                                            </div>
+                                        </div>
+                        
+                                        <div class="form-group row">
+                                            <label for="id_password1" class="col-sm-2 col-form-label text-right">Senha:</label>
+                                            <div class="col-lg-8">
+                                                <input type="password" class="form-control" id="id_password1" name="password1" placeholder="Senha" required>
+                                                <small class="form-text text-muted">Pelo menos 8 caracteres. Não pode ser inteiramente numérica. Não pode conter o nome de usuário.</small>
+                                            </div>
+                                        </div>
+                        
+                                        <div class="form-group row">
+                                            <label for="id_password2" class="col-sm-2 col-form-label text-right">Confirmação de Senha:</label>
+                                            <div class="col-lg-8">
+                                                <input type="password" class="form-control" id="id_password2" name="password2" placeholder="Confirmação de Senha" required>
+                                                <div id="password-match-message" style="color: red; font-size: 0.8em; display: none;">As senhas digitadas não correspondem.</div>
+                                            </div>
+                                        </div>
+                        
+                                        <div class="form-group row">
+                                            <div class="col-lg-8 offset-sm-2">
+                                                <button id="submit-btn" type="button" class="main-button" style="margin-left: 150px;">Cadastrar</button>
+                                                <div id="loading-message" style="display: none;">Enviando cadastro, por favor aguarde...</div>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+                        </div>
+                        
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+        
+    <!-- Scripts -->
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'assets/js/owl-carousel.js' %}"></script>
+    <script src="{% static 'assets/js/animation.js' %}"></script>
+    <script src="{% static 'assets/js/imagesloaded.js' %}"></script>
+    <script src="{% static 'assets/js/custom.js' %}"></script>
+</body>
+</html>
+
+    
+    <script>
+        // Event listener for form submission
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('contact-form');
+            const submitButton = document.getElementById('submit-btn');
+            const loadingMessage = document.getElementById('loading-message');
+            const password1Input = document.getElementById('id_password1');
+            const password2Input = document.getElementById('id_password2');
+            const passwordMatchMessage = document.getElementById('password-match-message');
+
+            // Event listener for button click
+            submitButton.addEventListener('click', function () {
+                // Show loading message
+                loadingMessage.style.display = 'block';
+                
+                // Serialize form data
+                const formData = new FormData(form);
+
+                // Compare passwords before submitting the form
+                if (password1Input.value !== password2Input.value) {
+                    // Display error message if passwords don't match
+                    passwordMatchMessage.style.display = 'block';
+                    // Hide loading message
+                    loadingMessage.style.display = 'none';
+                    return; // Prevent form submission
+                }
+
+                // Send AJAX request
+                fetch('/register/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest', // Indicate an AJAX request
+                        'X-CSRFToken': '{{ csrf_token }}' // Add CSRF token to the request
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // If the response is successful, show the success dialog
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Usuário cadastrado com sucesso!',
+                            showCancelButton: false,
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#007bff',
+                        }).then((result) => {
+                            window.location.href = '/login'; // Redirect to login page
+                        });
+                    } else {
+                        // If the response is not successful, show an error message
+                        throw new Error('Erro ao processar o formulário de registro.');
+                    }
+                })
+                .catch(error => {
+                    // If an error occurs during the AJAX request
+                    console.error('Erro:', error);
+                })
+                .finally(() => {
+                    // Hide loading message regardless of the outcome
+                    loadingMessage.style.display = 'none';
+                });
+            });
+        });
+        
+        // Função para formatar o número de telefone enquanto o usuário digita
+        function formatarTelefone(input) {
+            // Remove qualquer caracter que não seja número do input
+            var telefone = input.value.replace(/\D/g, '');
+    
+            // Verifica se o telefone tem 11 dígitos (celular)
+            if (telefone.length === 11) {
+                input.value = telefone.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+            } 
+            // Verifica se o telefone tem 10 dígitos (telefone fixo)
+            else if (telefone.length === 10) {
+                input.value = telefone.replace(/^(\d{2})(\d{4})(\d{4})$/, '($1) $2-$3');
+            }
+            // Se não se encaixa em nenhum dos formatos, mantenha o valor original
+            else {
+                input.value = telefone;
+            }
+        }
+    
+        // Event listener para chamar a função formatarTelefone quando o usuário digita
+        document.getElementById('id_telefone').addEventListener('input', function() {
+            formatarTelefone(this);
+        });
+        
+        // Event listener for username input
+        document.getElementById('id_username').addEventListener('input', function() {
+            const username = this.value;
+            if (username.trim() !== '') {
+                fetch(`/api/check_username/?username=${username}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error('Erro ao verificar o nome de usuário.');
+                    }
+                })
+                .then(data => {
+                    const existsMessage = document.getElementById('username-exists-message');
+                    if (data.exists) {
+                        // Nome de usuário já em uso
+                        existsMessage.innerText = data.message;
+                        existsMessage.style.color = 'red'; // Cor vermelha para indicar erro
+                        existsMessage.style.display = 'block';
+                    } else {
+                        // Nome de usuário disponível
+                        existsMessage.innerText = data.message;
+                        existsMessage.style.color = 'green'; // Cor verde para indicar disponibilidade
+                        existsMessage.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                });
+            } else {
+                document.getElementById('username-exists-message').style.display = 'none';
+            }
+        });
+    </script>
+
+</body>
+</html>
+{% endblock %}

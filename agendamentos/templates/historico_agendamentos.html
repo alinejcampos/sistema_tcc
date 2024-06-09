@@ -1,0 +1,72 @@
+{% extends 'base_pages.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histórico de Agendamentos dos Clientes</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .card {
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #007bff;
+            color: white;
+        }
+        .card-body {
+            padding: 20px;
+        }
+        .btn-primary {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h3 class="mt-3">Histórico de Agendamentos dos Clientes</h3>
+    <form action="{% url 'historico_agendamentos' %}" method="GET" class="mb-4">
+        <div class="form-group">
+            
+            <input type="text" class="form-control" id="pesquisa" name="pesquisa" placeholder="Digite o nome do cliente ou ID do agendamento">
+        </div>
+        <button type="submit" class="btn btn-primary">Pesquisar</button>
+    </form>
+    <div class="row">
+        {% for agendamento in agendamentos %}
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    Agendamento #{{ agendamento.id }}
+                </div>
+                <div class="card-body">
+                    <p><strong>Cliente:</strong> {{ agendamento.cliente_nome }}</p>
+                    <p><strong>Equipamento:</strong> {{ agendamento.equipamento.nome }}</p>
+                    <p><strong>Data Original:</strong> {{ agendamento.data_original }} {{ agendamento.hora_original }}</p>
+                    <p><strong>Nova Data:</strong> {{ agendamento.nova_data|default:"N/A" }} {{ agendamento.nova_hora|default:"N/A" }}</p>
+                    <p><strong>Hora:</strong> {{ agendamento.hora }}</p>
+                    <p><strong>Estado:</strong> 
+                        {% if agendamento.cancelado %}
+                            Cancelado
+                        {% elif agendamento.devolvido %}
+                            Devolvido
+                        {% elif agendamento.emprestado %}
+                            Emprestado
+                        {% else %}
+                            Agendado
+                        {% endif %}
+                    </p>
+                    <p><strong>Reagendado:</strong> {% if agendamento.reagendado %}Sim{% else %}Não{% endif %}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <a href="{% url 'administrador' %}" class="btn btn-primary mt-4">Voltar</a>
+</div>
+</body>
+</html>
+{% endblock %}

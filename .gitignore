@@ -82,6 +82,15 @@ target/
 profile_default/
 ipython_config.py
 
+
+# Text backup files
+*.bak
+
+# Database
+*.sqlite3
+
+*.env
+
 # pyenv
 #   For a library or package, you might want to ignore these files since the code is
 #   intended to run in multiple environments; otherwise, check them in:
@@ -127,6 +136,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+a_virtual/
 
 # Spyder project settings
 .spyderproject
@@ -151,6 +161,7 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
 
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can

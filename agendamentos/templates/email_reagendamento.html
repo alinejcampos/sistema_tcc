@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reagendamento de Agendamento</title>
+</head>
+<body>
+    <p>Olá {{ usuario.first_name }},</p>
+    <p>Seu agendamento foi reagendado com sucesso!</p>
+    <p>Detalhes do Novo Agendamento:</p>
+    <ul>
+        <li>Equipamento: {{ equipamento_nome }}</li>
+        <li>Data: {{ data }}</li>
+        <li>Hora: {{ hora }}</li>
+    </ul>
+    <p>Obrigado,</p>
+    <p>Sistema de Agendamentos</p>
+</body>
+</html>

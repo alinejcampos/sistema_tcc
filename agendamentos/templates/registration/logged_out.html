@@ -1,0 +1,16 @@
+{% extends 'base_pages.html' %}
+{% load static %}
+{% block content %}
+<div class="container_home">
+  <div class="home-form">
+    <div class="col-md-6 offset-md-3">
+      <div class="card mt-5">
+        <div class="card-body">
+          <h5 class="card-title">Você foi desconectado!</h5>
+          <p class="card-text">Clique <a href="{% url 'login' %}">aqui</a> para fazer login novamente.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
